@@ -56,3 +56,53 @@ java -jar build/libs/hello-spring-0.0.1-SNAPSHOT.jar하면 inteliJ에서 실행�
    - static link : 컴파일 타임에. 컴파일 된 소스파일 연결
    - dynamic link : 런타임에. 실행 도중 찾아서 연결
 
+=====================================
+스프링 웹 개발 기초
+
+크게 3가지 방식
+1. 정적 컨텐츠 : 파일 -> 그대로 브라우저로
+2. MVC와 템플릿 엔진 : html을 서버에서 동적으로 바꿔서 주는거. Model+View+Controller 패턴.
+3. API : 정해진 포맷으로 클라이언트에 전달 (요즘엔 json). 서버끼리 할 때도 이용 
+
+### Controller/HelloController.class
+
+
+[ 정적 컨텐츠 ]
+https://docs.spring.io/spring-boot/docs/current/reference/html/features.html#features.developing-web-applications.spring-mvc.static-content
+- 기본 위치 : resources/static
+- 웹 브라우저 -> ocalhost:8080/hello-stratic.html -> 파일 내용 그대로 보여줌
+- 동작 흐름 : 웹 브라우저 -> 스프링 컨테이너에서 컨트롤러 찾음 hello-static 관련 컨트롤러 없음 -> resources: static/hello-static.html 찾았다 -> 브라우저로 보내줌
+
+
+[ MVC와 템플릿 엔진 ]
+* 과거 model one? 방식 : view 안에서 다 함
+MVC 
+- Model : 데이터?
+- View : 화면 그리는 코드 (템플릿에 해당)
+- Controller : 비즈니스 로직, 내부 처리
+
+파라미터 정보 커맨드+P
+
+url에 파라미터 입력해서 넘기기 (GET)
+
+
+[ API ]
+컨트롤러에서
+@GetMapping(“hello-api”)
+@ResponseBody
+-> html body 부분에 return 내용 직접 넣어 보내겠다
+-> 리턴 타입 String이 아닌 Hello 클래스
+
+Controller 클래스 안에 static class Hello 만들기
+컨트롤+N -> Getter & setter 만들기
+
+- 동작 흐름 : 웹 브라우저 -> 스프링 컨테이너 내부의 helloController -> return 하는데 @ResponseBody 애노테이션 확인 
+  -> 객체를 리턴(Hello) -> HttpMessageConverter 로 전달 -> JsonConverter가 리턴된 객체를 json 스타일로 변형 / 기본 문자열이면 StringConverter
+  -> 요청한 브라우저나 서버에 보냄(응답)
+* 기본 문자처리 : StringHttpMessageConverter (이게 작동하도록 스프링에 설정되어있음)
+* 기본 객체처리 : MappingJackson2HttpMessageConverter (json->객체. 다른 컨버터 라이브러리도 있지만 spring이 기본으로 탑재함)
+* byte 처리 등등 기타 여러 HttpMessageConverter가 기본으로 등록되어 있음
+(템플릿처럼 view resolver가 작동하지 않음)
+
+* 클라이언트의 HTTP Accept 헤더 + 서버 컨트롤러 리턴 타입 정보 조합해서 HttpMessageConverter가 선택된다.
+
