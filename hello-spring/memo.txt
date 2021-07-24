@@ -1,0 +1,58 @@
+[ View 환경설정 ]
+Welcome 페이지 만들기 (도메인만 쳤을 때 나오는 페이지)
+Main/resources/static/index.html
+
+Spring.io -> Projects -> SpringBoot -> Learn ->> Reference 가서 -> Spring Boot Features
+
+https://docs.spring.io/spring-boot/docs/current/reference/html/features.html#features.developing-web-applications.spring-mvc.welcome-page
+
+7.1.6. Welcome Page
+Spring Boot는 static, templated 두 방식 모두 사용 가능
+찾는 순서 1) static 위치의 index.html 2) index template 3) 애플리케이션의 welcome page를 자동으로 사용함
+
+? template는 어디있음?
+? 1,2에 말고 Welcome page 넣는 곳이 있음?
+
+
+* 현재 스프링 버전 확인?
+### build.gradle 
+plugins {
+	id 'org.springframework.boot' version '2.5.2'
+	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+	id 'java'
+}
+
+
+index.html(static)은 그냥 파일 만들어서 던져주는 방식임
+-> Thymeleaf 템플릿 엔진을 활용 해보자
+
+7.1.10. Template Engines
+Spring Boot에서 auto-configuration 지원하는 템플릿 엔진 4개 -> 중 하나가 Thymeleaf
+
+* 컨트롤러 : 웹 애플리케이션 첫번째 진입점
+Main/java/hello/hellospring/controller/HelloController class 생성
+@Controller 필요
+
+* Cannot resolve symbol 'attributeName' —> “data” 치면 앞에이름은 자동생성됨. 직접치지마라
+
+- Resources/templates/hello.html 생성
+- 동작 흐름 : Web Browser에서 Url 입력(요청) -> 내장 톰캣서버 -> Controller -> View Resolver -> template 엔진 처리해서 -> Web Browser
+
+[ 빌드하고 실행하기 ]
+내 프로젝트 위치 —> 
+./gradlew build
+필요한 라이브러리 받고 빌드가 됨
+
+java -jar build/libs/hello-spring-0.0.1-SNAPSHOT.jar하면 inteliJ에서 실행한 것 처럼 아웃풋 뜨고 서버 실행됨
+서버 배포할땐 이 jar 만 배포해서 java -jar 로 실행하면 됨
+(톰캣 설치해서 뭐 만들어서 집어넣고 이런거 안해도됨)
+
+* 빌드 잘 안되면 ./gradlew clean build —> 기존 build 지우고 새로 빌드함
+
+
+* Build : 소스코드 파일을 실행 가능한 소프트웨어 산출물로 만드는 일련의 과정. 컴파일 단계 포함.
+* Compile : 소스코드 -> 바이너리 코드(기계어)로 변환 (산출물 : 목적파일). 자바의 경우 JVM에서 실행 가능한 바이트코드 형태의 클래스 파일이 생성됨
+* link : 컴파일한 결과물들에서 최종 실행가능 파일 만들기 위해 소스파일끼리 연결하는 작업. (다른 소스파일에 존재하는 함수 등..)
+   - static link : 컴파일 타임에. 컴파일 된 소스파일 연결
+   - dynamic link : 런타임에. 실행 도중 찾아서 연결
+
