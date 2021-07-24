@@ -106,3 +106,56 @@ Controller 클래스 안에 static class Hello 만들기
 
 * 클라이언트의 HTTP Accept 헤더 + 서버 컨트롤러 리턴 타입 정보 조합해서 HttpMessageConverter가 선택된다.
 
+
+=====================================
+[ 회원 도메인과 리포지토리 만들기 ]
+### domain/Member.java
+- Member class 생성
+### repository/MemberRepository.java
+- DB가 정해지지 않은 상황을 가정했으므로, 어느 DB로 정해져도 적용 가능하도록 interface 생성
+
+
+Java8
+- Optional
+- Lamda
+- Assertions
+
+[ 회원 리포지토리 테스트 케이스 작성 ]
+Main 으로 실행하는 것은 준비, 실행 시간이 오래걸리고 반복해서 실행하기 어렵다
+자바는 JUnit이라는 프레임 워크로 테스트를 실행할 수 있다
+
+src/test/java 에 main 쪽에 생성했던 리포지토리 구조 만들어줌
+main에서 java파일 이름 + test
+
+### src/test/java/OneStep/hellospring/repository/MemoryMemberRepositoryTest
+
+@Test
+
+값 비교 Assertions 로 비교 시 출력은 없지만 run 했을 때 build output에 결과 보임
+Assertions.assertEquals("무야호", result);	// org.junit
+값 다를 경우 -> 
+org.opentest4j.AssertionFailedError: 
+Expected :무야호
+Actual   :OneStep.hellospring.domain.Member@662ac478
+
+Assertions.assertThat(member).isEqualTo(result);    // org.assertj
+* Assertions는 static이라서 option+enter 하면 add on-demand 어쩌구.. -> import시켜서 바로쓸수있음
+
+* test run 했는데 없다고 에러 뜸 > No tests found for given includes
+  —> Preferences > Build, Exception, Deployment > Build Tools > Gradle > Run tests using > IntelliJ IDE 로 변경 (Gradle로 되어있었음)
+
+Test클래스에서 전체 한번에 돌리면 각 @Test의 실행 순서 보장이 안됨. (실행순서랜덤)
+Name 겹치게 추가해둔 member가 있어서 findByName() 테스트가 실패함
+-> 각 @Test 의 의존성을 없애주기 위해 매 테스트 마다 Repository를 클리어 한다
+
+@AfterEach	// @Test 끝날 때 마다 실행
+public void afterEach(){
+    repository.clearStore();	// interface에 헤더, class 구현부에 채워져있어야함
+}
+
+
+* TDD : Test 주도 개발. 테스트를 먼저 만들고 거기에 맞게 main 구현
+
+* 프로젝트 커지고 사람 많아지면 테스트가 필수임 잘 알아둬야함
+
+
