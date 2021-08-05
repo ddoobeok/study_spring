@@ -158,4 +158,65 @@ public void afterEach(){
 
 * 프로젝트 커지고 사람 많아지면 테스트가 필수임 잘 알아둬야함
 
+================================
+[ 스프링 빈과 의존관계 ]
+스프링 빈을 등록하고, 의존관계 설정하기
+
+- 컨트롤러가 MemberService를 의존한다 => MemberService 이용해서 조회하고 등등 동작함
+- spring 실행하면 생성되는 spring container 가 같이 생성하고 관리
+  spring container가 bean을 관리한다 
+@Controller	--> 외부 로직 받고
+  @AutoWired
+@Service	--> 비즈니스 로직
+@Repository	--> 데이터 관리
+
+(( controller/MemberController.java ))
+@Controller 	// 이 애노테이션 -> 스프링 컨테이너가 만들어질 때 이게 붙은 녀석은 객체를 만들어둔다 (여기선 MemberController 객체)
+public class MemberController {
+
+	// 1번 방법) 이렇게 사용하면 MemberController 마다 새로 생성됨. 전체 프로그램에서 딱 하나만 생성해서 사용하면 되는데?
+	// private final MemberService memberService = new Service();
+
+	// 2번 방법) 그래서 생성자로 넣어주기로 했다
+	private final MemberService memberService;
+
+	@Autowired	// spring container가 연결 해줌...설명좀 자세히좀... 
+	public MemberController(MemberService ms){
+		this.memberService = ms;
+	}
+	// 그런데 이렇게 하면 실행 안됨. (Could not be found)
+	// @Autowired붙은 애가 필요한 MemberService는 그저 순수 java 코드임. spring이 MemberService 갖다 관리하지 않음.
+	// ==> MemberService.java 가서 @Service 붙이면 됨. 
+	//     MemberServiced의 생성자에 @Autowired 붙이고 MembeoryMemberRepository.java에도 @Repository 붙여주기
+}
+
+Controller - Service 연결이 필요해서 @Autowired 사용.
+생성자에 @Autowired 가 되어있으면 MemberController 생성될 때 
+스프링 빈에 등록되어있는 MemberService 객체 가져다 넣어줌
+
+Spring Container 내부
+[ Controller -> Service -> Repository ]
+
+### 스프링 빈 등록하는 방법
+1) 컴포넌트 스캔과 자동 의존관계 설정 --> 위에서 한 방법
+2) 자바 코드로 직접 스프링 빈 등록하기
+
+@Service 코드 클릭해서 들어가면 @Component 가 포함되어 있음 (다른 애노테이션도 마찬가지)
+@Component 애노테이션이 있으면 spring 객체로 만들어서 spring container에 등록함 (= 스프링 빈으로 자동 등록됨)
+
+* 스프링은 스프링 컨테이너에 스프링 빈을 등록할 때 기본으로 싱글으로 등록한다.
+  => 같은 스프링 빈이면 모두 같은 인스턴스다. (설정으로 싱글톤 아니게 설정할 수 있지만 특별한 경우에만 함)
+? 특별한 경우가 어떤 경우?
+? 그럼 코드 상에서 새로 생성해서 못쓰는 것? 
+? 코드 상에 받아오는걸 빼먹으면 빈 등록만 되고 실제로 갖다 쓰는 곳이 없는것..?
+
+
+* DI (Dependency Injection)
+  IOC Container가 개발자 대신 정의된 대로 Bean 객체를 생성하고 의존성을 대신 주입해준다.
+  스프링은 이 방식으로 클래스간의 의존성을 줄일 수 있다. (결합도를 낮출 수 있다)
+* IOC Container (Inversion of Control. Spring Container)
+  사용자가 작성한 메타데이터(xml 파일 또는 애노테이션)에 따라 Bean 클래스를 생성, 관리하는 Spring의 핵심 컴포넌트
+https://galid1.tistory.com/493?category=769011
+
+
 
